@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import AutonomousCounter from './AutonomousCounter';
-import PilotedCounter from './PilotedCounter';
+import React, { useCallback, useEffect, useState } from 'react';
 import './styles.scss';
+import TasksList from 'src/pages/Home/components/TasksList/index';
+import tasksData from 'src/data/tasks.json';
+import Button from 'src/pages/Home/components/Button';
 
 function Home() {
-  const [counter, setCounter] = useState(0);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setTasks(tasksData);
+    },
+    1000);
+  }, []);
+
+  const addTask = useCallback(() => {
+    const newId = tasks.length + 1;
+    setTasks([{
+      id: newId,
+      title: `Tache #${newId}`,
+      description: null,
+      priority: 5,
+      state: 'done',
+    }, ...tasks],
+    );
+  }, [tasks]);
 
   return (
     <div className="home-container">
@@ -14,15 +33,12 @@ function Home() {
       </nav>
 
       <main>
-        <h2>Hello Home</h2>
-        <NavLink to="/example">Go to Example Page</NavLink>
+        <h2>TODO List</h2>
+        <TasksList tasks={tasks} />
+        <Button onClick={() => addTask()}>
+          Ajouter une tâche
+        </Button>
       </main>
-
-      <PilotedCounter
-        value={counter}
-        increment={() => setCounter(counter + 1)}
-      />
-      <AutonomousCounter />
     </div>
   );
 }
